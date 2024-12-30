@@ -1,9 +1,6 @@
-from bs4 import BeautifulSoup
-import requests
 from opensearchpy import OpenSearch
-
-OPENSEARCH_HOST = "http://localhost:9200"
-INDEX_NAME = "aviation_accidents"
+from parse import *
+from config import *
 
 client = OpenSearch(
     hosts=[OPENSEARCH_HOST],
@@ -37,6 +34,7 @@ def create_index():
         "mappings": {
             "properties": {
                 "date": {"type": "date"},
+                "time": {"type": "keyword"},
                 "airline": {
                     "type": "text",
                     "analyzer": "ngram_analyzer",
@@ -66,3 +64,5 @@ def create_index():
 
 if __name__ == "__main__":
     create_index()
+
+    parse_init(client)
