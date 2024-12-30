@@ -36,18 +36,23 @@ def create_index():
         },
         "mappings": {
             "properties": {
-                "airline_name": {
+                "date": {"type": "date"},
+                "airline": {
                     "type": "text",
-                    "analyzer": "ngram_analyzer"
+                    "analyzer": "ngram_analyzer",
+                    "fields": {
+                        "raw": {"type": "keyword"}
+                    }
                 },
-                "description": {
-                    "type": "text",
-                    "analyzer": "ngram_analyzer"
-                },
-                "location": {
-                    "type": "text",
-                    "analyzer": "ngram_analyzer"
-                }
+                "aircraft_registration": {"type": "keyword"},
+                "accident_type": {"type": "keyword"},
+                "description": {"type": "text", "analyzer": "ngram_analyzer"},
+                "fatalities": {"type": "integer"},
+                "occupants": {"type": "integer"},
+                "location": {"type": "text", "analyzer": "ngram_analyzer"},
+                "phase": {"type": "keyword"},
+                "aircraft_model": {"type": "keyword"},
+                "aircraft_status": {"type": "keyword"}
             }
         }
     }
