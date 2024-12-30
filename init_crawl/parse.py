@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 from config import *
+from datetime import datetime
+from opensearch_util import *
 
 
 def parse_init(client):
@@ -38,6 +40,7 @@ def parse_year(client, db_url, page_num):
             print(
                 f"Failed to retrieve {db_url}, status code: {response.status_code}")
 
+        docs = []
         rows = bs.find_all("tr", class_="list")
         for row in rows:
             link_tag = row.find("a")
@@ -45,11 +48,15 @@ def parse_year(client, db_url, page_num):
                 href = link_tag.get("href")
                 href_url = ACCIDENTS_URL + href
 
-                docs = []
                 doc = parse_detail_info(client, href_url)
+                doc = wrap_doc(doc)
                 docs.append(doc)
+
             else:
                 print("No <a> tag found in this row.")
+
+        # page 단위로 post to opensearch
+        post_docs(client, docs)
 
 
 def parse_detail_info(client, href_url):
@@ -70,13 +77,50 @@ def parse_detail_info(client, href_url):
         if not matched_keywords:
             continue
 
-        if row.text.strip() == "Date":
-            # TODO
-            continue
+        _value = row.find_parent("tr").text
+        _lst = _value.split(":")
+        if row.text.strip() == "Time:" and len(_lst) >= 3:
+            value = _lst[1] + ":" + _lst[2]
+        elif row.text.strip() == "Fatalities:" and len(_lst) >= 4:
+            value = _lst[1] + ":" + _lst[2] + ":" + _lst[3]
         else:
-            search_keyword = KEYWORD_SEARCH_MAP[matched_keywords[0]]
-            _value = row.find_parent("tr").text
-            value = _value.split(":")[1].strip()
+            value = _lst[1].strip()
+
+        search_keyword = KEYWORD_SEARCH_MAP[matched_keywords[0]]
+        _lst = value.split("/")
+
+        if row.text.strip() == "Date:":
+            value = process_date(value)
+            doc.update({search_keyword: value})
+        elif row.text.strip() == "Fatalities:" and len(_lst) >= 2:
+            search_keyword1 = KEYWORD_SEARCH_MAP[matched_keywords[0]][0]
+            search_keyword2 = KEYWORD_SEARCH_MAP[matched_keywords[0]][1]
+
+            value1 = _lst[0].split(":")[1].strip()
+            value2 = _lst[1].split(":")[1].strip()
+
+            doc.update({search_keyword1: value1})
+            doc.update({search_keyword2: value2})
+        else:
             doc.update({search_keyword: value})
 
     return doc
+
+
+def process_date(value):
+    # TODO: 연도도 없는 경우
+    try:
+        parsed_date = datetime.strptime(value, "%A %d %B %Y")
+        return parsed_date.strftime("%Y-%m-%d")
+    except ValueError:
+        year = extract_year(value)
+        if year:
+            return f"{year}-01-01"
+
+
+def extract_year(value):
+    import re
+    match = re.search(r"\b(19|20)\d{2}\b", value)
+    if match:
+        return match.group(0)
+    return None

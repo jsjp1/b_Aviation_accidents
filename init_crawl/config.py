@@ -19,13 +19,14 @@ HEADERS = {
 }
 
 KEYWORD = [
-    "Owner", "Type", "Date", "Time", "Aircraft damage", "Category", "Location", "Phase", "Narrative",
+    "Owner", "Type", "Date", "Time", "Fatalities", "Aircraft damage", "Category", "Location", "Phase", "Narrative",
 ]
 KEYWORD_SEARCH_MAP = {
     "Owner": "airline",
     "Type": "accident_type",
     "Date": "date",
     "Time": "time",
+    "Fatalities": ["fatalities", "occupants"],
     "Aircraft damage": "aircraft_status",
     "Category": "accident_type",
     "Location": "location",
