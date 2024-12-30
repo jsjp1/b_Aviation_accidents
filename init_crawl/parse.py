@@ -99,6 +99,16 @@ def parse_detail_info(client, href_url):
             value1 = _lst[0].split(":")[1].strip()
             value2 = _lst[1].split(":")[1].strip()
 
+            try:
+                value1 = int(value1)
+            except:
+                value1 = "0"
+
+            try:
+                value2 = int(value2)
+            except:
+                value2 = "0"
+
             doc.update({search_keyword1: value1})
             doc.update({search_keyword2: value2})
         else:
