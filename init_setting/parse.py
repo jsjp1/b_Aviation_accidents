@@ -2,10 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from config import *
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
-
 
 def parse_init(client):
     year = [y for y in range(1919, 2025)]
@@ -48,17 +44,39 @@ def parse_year(client, db_url, page_num):
             if link_tag:
                 href = link_tag.get("href")
                 href_url = ACCIDENTS_URL + href
-                parse_detail_info(client, href_url)
+
+                docs = []
+                doc = parse_detail_info(client, href_url)
+                docs.append(doc)
             else:
                 print("No <a> tag found in this row.")
 
 
 def parse_detail_info(client, href_url):
     response = requests.get(href_url, headers=HEADERS)
+
     if response.status_code == 200:
         bs = BeautifulSoup(response.content, "html.parser")
     else:
         print(
             f"Failed to retrieve {href_url}, status code: {response.status_code}")
 
-    pass
+    rows = bs.find_all("td", class_="caption")
+
+    doc = {}
+    for row in rows:
+        matched_keywords = [k for k in KEYWORD if k in row.text]
+        assert (len(matched_keywords) <= 1)
+        if not matched_keywords:
+            continue
+
+        if row.text.strip() == "Date":
+            # TODO
+            continue
+        else:
+            search_keyword = KEYWORD_SEARCH_MAP[matched_keywords[0]]
+            _value = row.find_parent("tr").text
+            value = _value.split(":")[1].strip()
+            doc.update({search_keyword: value})
+
+    return doc
