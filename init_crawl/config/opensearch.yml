@@ -2,16 +2,19 @@ cluster.name: opensearch-cluster
 node.name: opensearch-node1
 
 network.host: 0.0.0.0
+network.publish_host: 152.67.202.204
+http.port: 9200
+http.bind_host: 0.0.0.0
 
-plugins.security.ssl.transport.pemcert_filepath: certificates/node.pem
-plugins.security.ssl.transport.pemkey_filepath: certificates/node-key.pem
-plugins.security.ssl.transport.pemtrustedcas_filepath: certificates/root-ca.pem
+plugins.security.ssl.transport.pemcert_filepath: certificates/fullchain.pem
+plugins.security.ssl.transport.pemkey_filepath: certificates/privkey.pem
+plugins.security.ssl.transport.pemtrustedcas_filepath: certificates/fullchain.pem
 plugins.security.ssl.transport.enforce_hostname_verification: false
 
 plugins.security.ssl.http.enabled: true
-plugins.security.ssl.http.pemcert_filepath: certificates/node.pem
-plugins.security.ssl.http.pemkey_filepath: certificates/node-key.pem
-plugins.security.ssl.http.pemtrustedcas_filepath: certificates/root-ca.pem
+plugins.security.ssl.http.pemcert_filepath: certificates/fullchain.pem
+plugins.security.ssl.http.pemkey_filepath: certificates/privkey.pem
+plugins.security.ssl.http.pemtrustedcas_filepath: certificates/fullchain.pem
 
 plugins.security.allow_unsafe_democertificates: false
 plugins.security.allow_default_init_securityindex: true
@@ -19,7 +22,7 @@ plugins.security.authcz.admin_dn:
   - "CN=admin,OU=IT,O=Organization,L=Seoul,ST=Seoul,C=KR"
 
 plugins.security.nodes_dn:
-  - "CN=your.domain.com,OU=IT,O=Organization,L=Seoul,ST=Seoul,C=KR"
+  - "CN=avcc.jieeen.kr,OU=IT,O=Organization,L=Seoul,ST=Seoul,C=KR"
 
 plugins.security.audit.type: internal_opensearch
 plugins.security.enable_snapshot_restore_privilege: true

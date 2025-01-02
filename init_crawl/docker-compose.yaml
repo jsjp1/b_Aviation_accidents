@@ -3,6 +3,7 @@ version: "3.8"
 services:
   opensearch:
     image: opensearchproject/opensearch:2.12.0
+    network_mode: "host"
     container_name: opensearch
     environment:
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD}
@@ -15,11 +16,6 @@ services:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - "9200:9200"
-      - "9600:9600"
-    networks:
-      - opensearch-net
     volumes:
       - opensearch-data:/usr/share/opensearch/data
       - ./config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml
