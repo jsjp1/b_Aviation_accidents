@@ -1,4 +1,4 @@
-from opensearchpy import OpenSearch
+from opensearchpy import OpenSearch, RequestsHttpConnection
 from parse import *
 from config import *
 

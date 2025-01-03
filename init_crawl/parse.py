@@ -6,7 +6,8 @@ from opensearch_util import *
 
 
 def parse_init(client):
-    year = [y for y in range(1919, 2025)]
+    # year = [y for y in range(1919, 2025)]
+    year = [y for y in range(2023, 2024)]
     db_urls = [ACCIDENTS_DB_URL + "year/" + str(y) for y in year]
 
     parse(client, db_urls)
@@ -48,7 +49,7 @@ def parse_year(client, db_url, page_num):
                 href = link_tag.get("href")
                 href_url = ACCIDENTS_URL + href
 
-                doc = parse_detail_info(client, href_url)
+                doc = parse_detail_info(href_url)
                 doc = wrap_doc(doc)
                 docs.append(doc)
 
@@ -59,7 +60,7 @@ def parse_year(client, db_url, page_num):
         post_docs(client, docs)
 
 
-def parse_detail_info(client, href_url):
+def parse_detail_info(href_url):
     response = requests.get(href_url, headers=HEADERS)
 
     if response.status_code == 200:
@@ -113,6 +114,11 @@ def parse_detail_info(client, href_url):
             doc.update({search_keyword2: value2})
         else:
             doc.update({search_keyword: value})
+
+    narrative_span = bs.find("span", {"lang": "en-US"})
+    if narrative_span:
+        text = narrative_span.get_text(separator="\n").strip()
+        doc.update({"description": text})
 
     return doc
 
