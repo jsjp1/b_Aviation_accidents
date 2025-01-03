@@ -6,8 +6,7 @@ from opensearch_util import *
 
 
 def parse_init(client):
-    # year = [y for y in range(1919, 2025)]
-    year = [y for y in range(2023, 2024)]
+    year = [y for y in range(1919, 2025)]
     db_urls = [ACCIDENTS_DB_URL + "year/" + str(y) for y in year]
 
     parse(client, db_urls)
