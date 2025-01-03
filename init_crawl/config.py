@@ -9,7 +9,10 @@ ACCIDENTS_DB_URL = ACCIDENTS_URL + "database/"
 
 
 # opensearch setting
-OPENSEARCH_HOST = "http://localhost:9200"
+CLIENT_CERT = "opensearch-certs/fullchain.pem"
+CLIENT_KEY = "opensearch-certs/privkey.pem"
+
+OPENSEARCH_HOST = "https://avcc.jieeen.kr:9200"
 INDEX_NAME = "aviation_accidents"
 
 

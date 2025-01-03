@@ -5,7 +5,11 @@ from config import *
 client = OpenSearch(
     hosts=[OPENSEARCH_HOST],
     http_compress=True,
-    http_auth=("admin", "admin")
+    http_auth=("admin", "admin"),
+	use_ssl=True,
+	client_cert=CLIENT_CERT,
+	client_key=CLIENT_KEY,
+	connection_class=RequestsHttpConnection
 )
 
 
