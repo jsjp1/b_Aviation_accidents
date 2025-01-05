@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+import uvicorn
 import api
 
 app = FastAPI()
@@ -23,3 +23,10 @@ def read_airline_suggestions(airline: str):
 @app.get("/api/information/{airline}")
 def read_airline_info(airline: str):
     return api.read_airline_info(airline)
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app", port=8000, host="0.0.0.0",
+        reload=True, reload_dirs=["html_files"],
+    )
