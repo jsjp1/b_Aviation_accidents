@@ -25,6 +25,11 @@ def read_airline_info(airline: str):
     return api.read_airline_info(airline)
 
 
+@app.get("/api/description/{airline}/{date}")
+def read_airline_description(airline: str, date: str):
+    return api.read_airline_description(airline, date)
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app", port=8000, host="0.0.0.0",
