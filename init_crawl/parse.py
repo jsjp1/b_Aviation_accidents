@@ -102,12 +102,12 @@ def parse_detail_info(href_url):
             try:
                 value1 = int(value1)
             except:
-                value1 = "0"
+                value1 = 0
 
             try:
                 value2 = int(value2)
             except:
-                value2 = "0"
+                value2 = 0
 
             doc.update({search_keyword1: value1})
             doc.update({search_keyword2: value2})

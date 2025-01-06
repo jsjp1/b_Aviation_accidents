@@ -1,5 +1,5 @@
 from opensearchpy import OpenSearch, RequestsHttpConnection
-from config import *
+from config import OPENSEARCH_HOST, INDEX_NAME
 from collections import OrderedDict
 from datetime import datetime
 
@@ -8,30 +8,40 @@ client = OpenSearch(
     http_compress=True,
     http_auth=("admin", "admin"),
     use_ssl=True,
-    connection_class=RequestsHttpConnection
+    connection_class=RequestsHttpConnection,
 )
 
 
-def read_accidents(start: int, size: int):
+def fetch_data_from_opensearch(index: str, query: dict) -> list:
+    """
+    Helper function to fetch data from OpenSearch and handle errors gracefully.
+    """
+    try:
+        response = client.search(index=index, body=query)
+        return response.get("hits", {}).get("hits", [])
+    except Exception as e:
+        print(f"Error fetching data from OpenSearch: {e}")
+        return []
+
+
+def read_accidents(start: int, size: int) -> list:
+    """
+    Fetch accidents sorted by date in descending order.
+    """
     request_body = {
         "from": start,
         "size": size,
-        "sort": [
-            {
-                "date": {
-                    "order": "desc"
-                }
-            }
-        ],
-        "_source": ["date", "time", "airline", "fatalities", "occupants", "location"]
+        "sort": [{"date": {"order": "desc"}}],
+        "_source": ["date", "time", "airline", "fatalities", "occupants", "location"],
     }
-
-    response = client.search(index=INDEX_NAME, body=request_body)
-    response = [x["_source"] for x in response["hits"]["hits"]]
-    return response
+    response = fetch_data_from_opensearch(INDEX_NAME, request_body)
+    return [x["_source"] for x in response]
 
 
-def read_airline_suggestions(airline: str):
+def read_airline_suggestions(airline: str) -> list:
+    """
+    Fetch unique airline suggestions based on fuzzy matching or wildcard search.
+    """
     request_body = {
         "query": {
             "bool": {
@@ -41,34 +51,31 @@ def read_airline_suggestions(airline: str):
                             "airline": {
                                 "query": airline,
                                 "fuzziness": "AUTO",
-                            },
-                        },
+                            }
+                        }
                     },
                     {
                         "wildcard": {
                             "airline.raw": {
-                                "value": "*$query*",
+                                "value": f"*{airline}*",
                                 "boost": 0.5,
-                            },
-                        },
+                            }
+                        }
                     },
-                ],
-            },
-        },
+                ]
+            }
+        }
     }
-
-    response = client.search(index=INDEX_NAME, body=request_body)
-    response = response["hits"]["hits"]
-
-    response = [x["_source"]["airline"]
-                for x in response if x["_source"]["airline"]]
-
-    unique_response = list(OrderedDict.fromkeys(response))[:5]
-
-    return unique_response
+    response = fetch_data_from_opensearch(INDEX_NAME, request_body)
+    airlines = [x["_source"].get("airline", "")
+                for x in response if x["_source"].get("airline")]
+    return list(OrderedDict.fromkeys(airlines))[:5]
 
 
-def read_airline_info(airline: str):
+def read_airline_info(airline: str) -> list:
+    """
+    Fetch detailed information for a specific airline, sorted by date in descending order.
+    """
     request_body = {
         "query": {
             "term": {
@@ -78,12 +85,16 @@ def read_airline_info(airline: str):
             }
         }
     }
+    
+    response = fetch_data_from_opensearch(INDEX_NAME, request_body)
+    airline_data = [x["_source"] for x in response]
 
-    response = client.search(index=INDEX_NAME, body=request_body)
-    response = response["hits"]["hits"]
-    response = [x["_source"] for x in response]
-
-    sorted_response = sorted(response, key=lambda x: datetime.strptime(
-        x['date'], '%Y-%m-%d'), reverse=True)
-
-    return sorted_response
+    sorted_airline_data = sorted(
+        airline_data,
+        key=lambda x: datetime.strptime(
+            x.get("date", "1970-01-01"), "%Y-%m-%d"),
+        reverse=True,
+    )
+    return sorted_airline_data
+    
+    
