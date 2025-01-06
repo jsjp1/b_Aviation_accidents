@@ -98,7 +98,7 @@ def read_airline_info(airline: str) -> list:
     return sorted_airline_data
     
     
-def read_airline_description(airline: str, date: str) -> list:
+def read_airline_description(airline: str, date: str):
     """
     Fetch descriptions of all incidents for a specific airline, sorted by date in descending order.
     """
@@ -128,6 +128,6 @@ def read_airline_description(airline: str, date: str) -> list:
     
     response = fetch_data_from_opensearch(INDEX_NAME, request_body)
     
-    descriptions = [x["_source"]["description"] for x in response if "description" in x["_source"]]
+    descriptions = [x["_source"]["description"] for x in response if "description" in x["_source"]][0]
     
     return descriptions
