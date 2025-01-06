@@ -74,28 +74,33 @@ def read_airline_suggestions(airline: str) -> list:
 
 def read_airline_info(airline: str) -> list:
     """
-    Fetch detailed information for a specific airline, sorted by date in descending order.
+    Fetch detailed information for a specific airline, allowing for minor differences 
+    in spacing or formatting, sorted by date in descending order.
     """
     request_body = {
         "query": {
-            "term": {
-                "airline.raw": {
-                    "value": airline
-                }
+            "bool": {
+                "should": [
+                    {
+                        "term": {
+                            "airline.raw": {
+                                "value": airline
+                            }
+                        }
+                    }
+                ]
             }
-        }
+        },
+        "sort": [
+            {"date": {"order": "desc", "missing": "_last"}}
+        ],
+        "size": 1000
     }
-    
+
     response = fetch_data_from_opensearch(INDEX_NAME, request_body)
     airline_data = [x["_source"] for x in response]
-
-    sorted_airline_data = sorted(
-        airline_data,
-        key=lambda x: datetime.strptime(
-            x.get("date", "1970-01-01"), "%Y-%m-%d"),
-        reverse=True,
-    )
-    return sorted_airline_data
+    
+    return airline_data
     
     
 def read_airline_description(airline: str, date: str):
