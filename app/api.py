@@ -32,7 +32,7 @@ def read_accidents(start: int, size: int) -> list:
         "from": start,
         "size": size,
         "sort": [{"date": {"order": "desc"}}],
-        "_source": ["date", "time", "airline", "fatalities", "occupants", "location"],
+        "_source": ["date", "time", "airline", "fatalities", "occupants", "location", "aircraft_status"],
     }
     response = fetch_data_from_opensearch(INDEX_NAME, request_body)
     return [x["_source"] for x in response]
