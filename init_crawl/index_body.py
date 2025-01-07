@@ -11,7 +11,7 @@ index_body = {
                 "ngram_tokenizer": {
                     "type": "ngram",
                     "min_gram": 2,
-                    "max_gram": 4 
+                    "max_gram": 4
                 }
             }
         },
@@ -33,7 +33,7 @@ index_body = {
             "aircraft_registration": {"type": "keyword"},
             "accident_type": {"type": "keyword"},
             "description": {"type": "text"},
-            "ko-description": {"type": "text"},
+            "ko_description": {"type": "text"},
             "fatalities": {"type": "integer"},
             "occupants": {"type": "integer"},
             "location": {
