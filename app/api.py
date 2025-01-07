@@ -1,7 +1,9 @@
-from opensearchpy import OpenSearch, RequestsHttpConnection
+from opensearchpy import OpenSearch, RequestsHttpConnection, TransportError, RequestError, ConnectionError
 from config import OPENSEARCH_HOST, INDEX_NAME
 from collections import OrderedDict
 from datetime import datetime
+from fastapi import HTTPException
+
 
 client = OpenSearch(
     hosts=[OPENSEARCH_HOST],
@@ -136,3 +138,43 @@ def read_airline_description(airline: str, date: str):
     descriptions = [x["_source"]["description"] for x in response if "description" in x["_source"]][0]
     
     return descriptions
+
+
+def check_ko_description(_id: str) -> bool:
+    """
+    Check if the ko_description field is empty for the given document ID.
+    """
+    try:
+        response = client.get(index=INDEX_NAME, id=_id)
+        
+        ko_description = response["_source"].get("ko_description", "")
+        return ko_description == ""
+
+    except Exception as e:
+        print(f"Error fetching document: {e}")
+        return True
+
+
+def update_ko_description(doc_id: str, description: str) -> dict:
+    try:
+        doc = {
+            "doc": {
+                "ko_description": description
+            },
+            "doc_as_upsert": True 
+        }
+
+        response = client.update(index=INDEX_NAME, id=doc_id, body=doc)
+
+        if response['result'] == 'updated' or response['result'] == 'created':
+            return {"message": "Description updated successfully.", "status": "success"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update description.")
+
+    except (TransportError, RequestError) as e:
+        raise HTTPException(status_code=400, detail=f"OpenSearch error: {str(e)}")
+    except ConnectionError as e:
+        raise HTTPException(status_code=500, detail=f"Connection error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    

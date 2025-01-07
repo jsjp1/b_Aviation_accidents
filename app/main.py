@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 import api
+from model import DescriptionUpdate
 
 app = FastAPI()
 
@@ -28,6 +29,20 @@ def read_airline_info(airline: str):
 @app.get("/api/description/{airline}/{date}")
 def read_airline_description(airline: str, date: str):
     return api.read_airline_description(airline, date)
+
+
+@app.get("/api/check_ko_description/{_id}")
+def check_ko_description(_id: str):
+    is_empty = api.check_ko_description(_id)
+    return {"ko_description_empty": is_empty}
+
+
+@app.put("/api/ko_description/")
+def update_ko_description(data: DescriptionUpdate):
+    doc_id = data.doc_id
+    description = data.description
+    
+    return api.update_ko_description(doc_id, description)
 
 
 if __name__ == "__main__":
