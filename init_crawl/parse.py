@@ -118,6 +118,8 @@ def parse_detail_info(href_url):
     if narrative_span:
         text = narrative_span.get_text(separator="\n").strip()
         doc.update({"description": text})
+    
+    doc.update({"ko_description": ""}) # 빈 데이터로 초기화
 
     return doc
 
