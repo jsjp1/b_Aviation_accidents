@@ -100,52 +100,40 @@ def read_airline_info(airline: str) -> list:
     }
 
     response = fetch_data_from_opensearch(INDEX_NAME, request_body)
-    airline_data = [x["_source"] for x in response]
+    airline_data = [{**doc["_source"], "_id": doc["_id"]} for doc in response if "_source" in doc and "_id" in doc]
     
     return airline_data
     
     
-def read_airline_description(airline: str, date: str):
+def read_airline_description(doc_id: str):
     """
-    Fetch descriptions of all incidents for a specific airline, sorted by date in descending order.
+    Fetch the description for a specific document by ID.
     """
     request_body = {
         "_source": ["description"],
         "query": {
-            "bool": {
-                "must": [
-                    {
-                        "term": {
-                            "airline.raw": {
-                                "value": airline
-                            }
-                        }
-                    },
-                    {
-                        "term": {
-                            "date": {
-                                "value": date
-                            }
-                        }
-                    }
-                ]
+            "terms": {
+                "_id": [doc_id]
             }
         }
     }
-    
+
     response = fetch_data_from_opensearch(INDEX_NAME, request_body)
-    
-    descriptions = [x["_source"]["description"] for x in response if "description" in x["_source"]][0]
-    
-    return descriptions
+    description = [
+        {"description": x["_source"]["description"]}
+        for x in response
+        if "_source" in x and "description" in x["_source"]
+    ][0]
+
+    return description
 
 
-def check_ko_description(_id: str) -> bool:
+def check_ko_description(doc_id: str) -> bool:
     """
     Check if the ko_description field is empty for the given document ID.
     """
     try:
-        response = client.get(index=INDEX_NAME, id=_id)
+        response = client.get(index=INDEX_NAME, id=doc_id)
         
         ko_description = response["_source"].get("ko_description", "")
         return ko_description == ""

@@ -26,9 +26,9 @@ def read_airline_info(airline: str):
     return api.read_airline_info(airline)
 
 
-@app.get("/api/description/{airline}/{date}")
-def read_airline_description(airline: str, date: str):
-    return api.read_airline_description(airline, date)
+@app.get("/api/description/{_id}")
+def read_airline_description(_id: str):
+    return api.read_airline_description(_id)
 
 
 @app.get("/api/check_ko_description/{_id}")
