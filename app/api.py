@@ -128,6 +128,29 @@ def read_airline_description(doc_id: str):
     return description
 
 
+def read_airline_ko_description(doc_id: str):
+    """
+    Fetch the description for a specific document by ID.
+    """
+    request_body = {
+        "_source": ["ko_description"],
+        "query": {
+            "terms": {
+                "_id": [doc_id]
+            }
+        }
+    }
+
+    try: 
+        response = fetch_data_from_opensearch(INDEX_NAME, request_body)
+        description = {"description": response[0]["_source"]["ko_description"]}
+
+        return description
+    except Exception as e:
+        print(f"Error fetching document: {e}")
+        return {"description": ""}
+
+
 def check_ko_description(doc_id: str) -> bool:
     """
     Check if the ko_description field is empty for the given document ID.

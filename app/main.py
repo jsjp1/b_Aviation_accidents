@@ -30,6 +30,10 @@ def read_airline_info(airline: str):
 def read_airline_description(_id: str):
     return api.read_airline_description(_id)
 
+@app.get("/api/ko_description/{_id}")
+def read_airline_ko_description(_id: str):
+    return api.read_airline_ko_description(_id)
+
 
 @app.get("/api/check_ko_description/{_id}")
 def check_ko_description(_id: str):
