@@ -63,7 +63,7 @@ def read_airline_suggestions(airline: str) -> list:
         if response:
             suggestions = response[0]["options"]
             airlines = [option["text"] for option in suggestions]
-            return list(OrderedDict.fromkeys(airlines))
+            return list(OrderedDict.fromkeys(airlines))[:5]
         else:
             return []
     except Exception as e:
