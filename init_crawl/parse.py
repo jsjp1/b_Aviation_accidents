@@ -90,7 +90,10 @@ def parse_detail_info(href_url):
         _lst = value.split("/")
 
         if row.text.strip() == "Owner:":
-            doc.update({search_keyword: value, "weight": DEFAULT_WEIGHT})
+            doc.update({search_keyword: {
+                "input": value,
+                "weight": DEFAULT_WEIGHT
+            }})
         elif row.text.strip() == "Date:":
             value = process_date(value)
             doc.update({search_keyword: value})
