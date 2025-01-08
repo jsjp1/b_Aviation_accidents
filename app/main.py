@@ -11,6 +11,11 @@ def read_root():
     return {"message": "FastAPI"}
 
 
+@app.get("/api/accident/{date}")
+def read_accident(date: str):
+    return api.read_accident(date)
+
+
 @app.get("/api/accidents")
 def read_accidents(start: int, size: int):
     return api.read_accidents(start, size)
@@ -29,6 +34,7 @@ def read_airline_info(airline: str):
 @app.get("/api/description/{_id}")
 def read_airline_description(_id: str):
     return api.read_airline_description(_id)
+
 
 @app.get("/api/ko_description/{_id}")
 def read_airline_ko_description(_id: str):

@@ -29,6 +29,26 @@ def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) 
         print(f"Error fetching data from OpenSearch: {e}")
         return []
 
+
+def read_accident(date: str) -> dict:
+    try: 
+        request_body = {
+            "size": 1,
+            "sort": [
+                {
+                    "date": {
+                        "order": "desc"
+                    }
+                }
+            ]
+        }
+        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        return response[0]
+    except Exception as e:
+        print(f"Error fetching accident: {e}")
+        return {}
+
+
 def read_accidents(start: int, size: int) -> list:
     try:
         request_body = {
@@ -42,6 +62,7 @@ def read_accidents(start: int, size: int) -> list:
     except Exception as e:
         print(f"Error fetching accidents: {e}")
         return []
+
 
 def read_airline_suggestions(airline: str) -> list:
     try:
@@ -70,6 +91,7 @@ def read_airline_suggestions(airline: str) -> list:
         print(f"Error fetching airline suggestions: {e}")
         return []
 
+
 def read_airline_info(airline: str) -> list:
     try:
         request_body = {
@@ -96,6 +118,7 @@ def read_airline_info(airline: str) -> list:
         print(f"Error fetching airline info: {e}")
         return []
 
+
 def read_airline_description(doc_id: str):
     try:
         request_body = {
@@ -116,6 +139,7 @@ def read_airline_description(doc_id: str):
         print(f"Error fetching airline description: {e}")
         return {}
 
+
 def read_airline_ko_description(doc_id: str):
     try: 
         request_body = {
@@ -131,6 +155,7 @@ def read_airline_ko_description(doc_id: str):
         print(f"Error fetching Korean description: {e}")
         return {"description": ""}
 
+
 def check_ko_description(doc_id: str) -> bool:
     try:
         response = client.get(index=INDEX_NAME, id=doc_id)
@@ -139,6 +164,7 @@ def check_ko_description(doc_id: str) -> bool:
     except Exception as e:
         print(f"Error checking Korean description: {e}")
         return True
+
 
 def update_ko_description(doc_id: str, description: str) -> dict:
     try:
