@@ -24,7 +24,7 @@ index_body = {
             "date": {"type": "date"},
             "time": {"type": "keyword"},
             "airline": {
-                "type": "text",
+                "type": "completion",
                 "analyzer": "ngram_analyzer",
                 "fields": {
                     "raw": {"type": "keyword"}
