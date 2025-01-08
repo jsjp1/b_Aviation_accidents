@@ -12,6 +12,7 @@ client = OpenSearch(
     connection_class=RequestsHttpConnection,
 )
 
+
 def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) -> list:
     try:
         response = client.search(index=index, body=query)
@@ -43,7 +44,7 @@ def read_accident(date: str) -> dict:
             ]
         }
         response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
-        return response[0]
+        return response[0]["_source"]
     except Exception as e:
         print(f"Error fetching accident: {e}")
         return {}
