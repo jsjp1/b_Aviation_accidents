@@ -89,6 +89,8 @@ def parse_detail_info(href_url):
         search_keyword = KEYWORD_SEARCH_MAP[matched_keywords[0]]
         _lst = value.split("/")
 
+        if row.text.strip() == "Owner:":
+            doc.update({search_keyword: value, "weight": DEFAULT_WEIGHT})
         if row.text.strip() == "Date:":
             value = process_date(value)
             doc.update({search_keyword: value})

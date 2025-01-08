@@ -45,33 +45,29 @@ def read_airline_suggestions(airline: str) -> list:
     Fetch unique airline suggestions based on fuzzy matching or wildcard search.
     """
     request_body = {
-        "query": {
-            "bool": {
-                "should": [
-                    {
-                        "match": {
-                            "airline": {
-                                "query": airline,
-                                "fuzziness": "AUTO",
-                            }
-                        }
-                    },
-                    {
-                        "wildcard": {
-                            "airline.raw": {
-                                "value": f"*{airline}*",
-                                "boost": 0.5,
-                            }
-                        }
-                    },
-                ]
+        "_source": "airline",
+        "suggest": {
+            "airline-suggestions": {
+                "prefix": airline,
+                "completion": {
+                    "field": "airline", 
+                    "size": 5,
+                    "fuzzy": {
+                        "fuzziness": "AUTO"
+                    }
+                }
             }
         }
     }
-    response = fetch_data_from_opensearch(INDEX_NAME, request_body)
-    airlines = [x["_source"].get("airline", "")
-                for x in response if x["_source"].get("airline")]
-    return list(OrderedDict.fromkeys(airlines))[:5]
+    try:
+        response = fetch_data_from_opensearch(INDEX_NAME, request_body)
+        print(response)
+        suggestions = response["suggest"]["airline-suggest"][0]["options"]
+        airlines = [option["text"] for option in suggestions]
+    except Exception as e:
+        airlines = []
+    
+    return airlines
 
 
 def read_airline_info(airline: str) -> list:

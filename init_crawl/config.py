@@ -36,3 +36,5 @@ KEYWORD_SEARCH_MAP = {
     "Phase": "phase",
     "Narrative": "description",
 }
+
+DEFAULT_WEIGHT = 10
