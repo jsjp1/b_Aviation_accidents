@@ -62,7 +62,7 @@ def read_airline_suggestions(airline: str) -> list:
     try:
         response = fetch_data_from_opensearch(INDEX_NAME, request_body)
         print(response)
-        suggestions = response["suggest"]["airline-suggest"][0]["options"]
+        suggestions = response["suggest"]["airline-suggestions"][0]["options"]
         airlines = [option["text"] for option in suggestions]
     except Exception as e:
         airlines = []

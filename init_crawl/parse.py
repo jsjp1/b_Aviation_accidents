@@ -91,7 +91,7 @@ def parse_detail_info(href_url):
 
         if row.text.strip() == "Owner:":
             doc.update({search_keyword: value, "weight": DEFAULT_WEIGHT})
-        if row.text.strip() == "Date:":
+        elif row.text.strip() == "Date:":
             value = process_date(value)
             doc.update({search_keyword: value})
         elif row.text.strip() == "Fatalities:" and len(_lst) >= 2:
