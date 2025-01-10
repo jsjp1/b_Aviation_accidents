@@ -145,4 +145,4 @@ def extract_year(value):
     match = re.search(r"\b(19|20)\d{2}\b", value)
     if match:
         return match.group(0)
-    return None
+    return 1900
