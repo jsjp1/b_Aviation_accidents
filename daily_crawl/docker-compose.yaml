@@ -1,7 +1,6 @@
 version: "3.8"
 services:
   jenkins:
-    # image: jenkins/jenkins:2.479.3-lts-jdk17
     build:
       context: .
       dockerfile: Dockerfile
