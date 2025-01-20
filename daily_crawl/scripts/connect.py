@@ -1,8 +1,11 @@
 import os
 import json
 from opensearchpy import OpenSearch, RequestsHttpConnection
+from dotenv import load_dotenv
 
-OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST', 'localhost:9200')
+load_dotenv()
+
+OPENSEARCH_HOST = os.getenv('OPENSEARCH_HOST')
 OPENSEARCH_ID = os.getenv('OPENSEARCH_ID')
 OPENSEARCH_PASSWORD = os.getenv('OPENSEARCH_PASSWORD')
 
