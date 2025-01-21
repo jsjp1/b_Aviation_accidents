@@ -14,11 +14,16 @@ HEADERS = {
 current_year = datetime.now().year
 DB_URL = os.getenv("DB_URL") + str(current_year)
 
-response = requests.get(DB_URL, headers=HEADERS)
-if response.status_code == 200:
-  bs = BeautifulSoup(response.content, "html.parser")
-else:
-  print(f"Failed to retrieve {DB_URL}, status_code: {response.status_code}")
+try: 
+    response = requests.get(DB_URL, headers=HEADERS)
+    if response.status_code == 200:
+        bs = BeautifulSoup(response.content, "html.parser")
+    else:
+        print(f"Failed to retrieve {DB_URL}, status_code: {response.status_code}")
+        exit(-1)
+except Exception as e:
+    print(e)
+    exit(-1) 
   
 _page_num = bs.find("div", class_="pagenumbers")
 page_num = len(_page_num.find_all(recursive=False))
