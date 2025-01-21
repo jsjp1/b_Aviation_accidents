@@ -45,7 +45,7 @@ def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) 
 
 
 try: 
-  with open("./href_map.json", 'r') as f:
+  with open("/var/jenkins_scripts/href_map.json", 'r') as f:
     date_href_map = json.load(f)
 except Exception as e:
   print(e)
