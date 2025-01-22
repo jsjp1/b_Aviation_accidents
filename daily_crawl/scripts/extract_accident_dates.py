@@ -23,7 +23,7 @@ try:
         exit(-1)
 except Exception as e:
     print(e)
-    exit(-1) 
+    exit(-1)  
   
 _page_num = bs.find("div", class_="pagenumbers")
 page_num = len(_page_num.find_all(recursive=False))
@@ -52,7 +52,7 @@ for page in page_range:
       date_href_map[formatted_date] = data.find("a").get("href")
     
 try:
-  with open('/var/jenkins_scripts/href_map.json', 'w') as f:
+  with open('./href_map.json', 'w') as f:
     json.dump(date_href_map, f)
 except Exception as e:
     print(e)

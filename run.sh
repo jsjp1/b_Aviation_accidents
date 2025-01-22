@@ -19,7 +19,7 @@ if [ "$restart_fastapi" = "1" ]; then
   echo "Restarting FastAPI Server..."
   cd ./app
   nohup python3 main.py > ../logs/api_server.log 2>&1 &
-  echo "FastAPI server restarted. Logs are in ./log"
+  echo "FastAPI server restarted. Logs are in ./logs"
   echo ""
   cd ..
 fi
@@ -47,7 +47,7 @@ if [ "$init_crawl" = "1" ]; then
   echo "Initializing crawlign process..."
   cd ./init_crawl
   nohup python3 main.py > ../logs/crawl.log 2>&1 &
-  echo "Crawling initialized. Logs are in ./log"
+  echo "Crawling initialized. Logs are in ./logs"
   echo ""
   cd ..
 fi
