@@ -78,7 +78,7 @@ for date in date_lst:
     
 try: 
   with open("/var/jenkins_scripts/href_map.json", 'w') as f:
-    json.dumps(date_href_map, f)
+    json.dump(date_href_map, f)
 except Exception as e:
   print(e)
   exit(-1)
