@@ -52,7 +52,7 @@ for page in page_range:
       date_href_map[formatted_date] = data.find("a").get("href")
     
 try:
-  with open('./href_map.json', 'w') as f:
+  with open('/var/jenkins_scripts/href_map.json', 'w') as f:
     json.dump(date_href_map, f)
 except Exception as e:
     print(e)
