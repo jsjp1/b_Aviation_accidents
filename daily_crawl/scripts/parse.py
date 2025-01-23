@@ -63,7 +63,7 @@ def extract_year(value):
 
 
 try:
-  with open("./href_map.json", 'r') as f:
+  with open("/var/jenkins_scripts/href_map.json", 'r') as f:
     href_map = json.load(f)
 except FileNotFoundError as e:
   print(e)
