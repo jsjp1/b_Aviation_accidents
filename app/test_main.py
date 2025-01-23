@@ -15,7 +15,7 @@ def test_read_root():
 
 
 def test_read_accident():
-    response = client.get(f"/api/accident/")
+    response = client.get("/api/accident/")
     res_dict = response.json()
     key_lst = ['date', 'time', 'accident_type', 'airline', 'fatalities', 'occupants', 'aircraft_status', 'location', 'phase', 'description', 'ko_description']
     
