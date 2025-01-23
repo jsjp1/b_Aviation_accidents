@@ -12,7 +12,7 @@ client = OpenSearch(
 )
 
 
-def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) -> list:
+async def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) -> list:
     try:
         response = client.search(index=index, body=query)
         return response.get(hits1, {}).get(hits2, [])
@@ -29,8 +29,7 @@ def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) 
         print(f"Error fetching data from OpenSearch: {e}")
         return []
 
-
-def read_recent_accident() -> dict:
+async def read_recent_accident() -> dict:
     try: 
         request_body = {
             "size": 1,
@@ -42,14 +41,14 @@ def read_recent_accident() -> dict:
                 }
             ]
         }
-        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
         return response[0]["_source"]
     except Exception as e:
         print(f"Error fetching accident: {e}")
         return {}
 
 
-def read_accidents(start: int, size: int) -> list:
+async def read_accidents(start: int, size: int) -> list:
     try:
         request_body = {
             "from": start,
@@ -57,14 +56,14 @@ def read_accidents(start: int, size: int) -> list:
             "sort": [{"date": {"order": "desc"}}],
             "_source": ["date", "time", "airline", "fatalities", "occupants", "location", "aircraft_status"],
         }
-        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
         return [{"_id": x["_id"], **x["_source"]} for x in response]
     except Exception as e:
         print(f"Error fetching accidents: {e}")
         return []
 
 
-def read_airline_suggestions(airline: str) -> list:
+async def read_airline_suggestions(airline: str) -> list:
     try:
         request_body = {
             "_source": "airline",
@@ -80,7 +79,7 @@ def read_airline_suggestions(airline: str) -> list:
             }
         }
         
-        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "suggest", "airline-suggest")
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "suggest", "airline-suggest")
         if response:
             suggestions = response[0]["options"]
             airlines = [option["text"] for option in suggestions]
@@ -92,7 +91,7 @@ def read_airline_suggestions(airline: str) -> list:
         return []
 
 
-def read_airline_info(airline: str) -> list:
+async def read_airline_info(airline: str) -> list:
     try:
         request_body = {
             "query": {
@@ -112,14 +111,14 @@ def read_airline_info(airline: str) -> list:
             "size": 1000
         }
 
-        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
         return [{**doc["_source"], "_id": doc["_id"]} for doc in response if "_source" in doc and "_id" in doc]
     except Exception as e:
         print(f"Error fetching airline info: {e}")
         return []
 
 
-def read_airline_description(doc_id: str):
+async def read_airline_description(doc_id: str):
     try:
         request_body = {
             "_source": ["description"],
@@ -128,7 +127,7 @@ def read_airline_description(doc_id: str):
             }
         }
 
-        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
         description = [
             {"description": x["_source"]["description"]}
             for x in response if "_source" in x and "description" in x["_source"]
@@ -140,7 +139,7 @@ def read_airline_description(doc_id: str):
         return {}
 
 
-def read_airline_ko_description(doc_id: str):
+async def read_airline_ko_description(doc_id: str):
     try: 
         request_body = {
             "_source": ["ko_description"],
@@ -149,16 +148,16 @@ def read_airline_ko_description(doc_id: str):
             }
         }
 
-        response = fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
         return {"description": response[0]["_source"]["ko_description"]} if response else {"description": ""}
     except Exception as e:
         print(f"Error fetching Korean description: {e}")
         return {"description": ""}
 
 
-def check_ko_description(doc_id: str) -> bool:
+async def check_ko_description(doc_id: str) -> bool:
     try:
-        response = client.get(index=INDEX_NAME, id=doc_id)
+        response = await client.get(index=INDEX_NAME, id=doc_id)
         ko_description = response["_source"].get("ko_description", "")
         return ko_description == ""
     except Exception as e:
@@ -166,14 +165,14 @@ def check_ko_description(doc_id: str) -> bool:
         return True
 
 
-def update_ko_description(doc_id: str, description: str) -> dict:
+async def update_ko_description(doc_id: str, description: str) -> dict:
     try:
         doc = {
             "doc": {"ko_description": description},
             "doc_as_upsert": True 
         }
 
-        response = client.update(index=INDEX_NAME, id=doc_id, body=doc)
+        response = await client.update(index=INDEX_NAME, id=doc_id, body=doc)
 
         if response['result'] in ['updated', 'created']:
             return {"message": "Description updated successfully.", "status": "success"}
