@@ -18,6 +18,15 @@ mkdir -p ./logs
 if [ "$restart_fastapi" = "1" ]; then
   echo "Restarting FastAPI Server..."
   cd ./app
+  
+  PID=$(lsof -i :8000 | grep LISTEN | awk '{print $2}')
+  if [ -n "$PID" ]; then
+      echo "Killing process on port 8000 with PID: $PID"
+      sudo kill -9 $PID
+  else
+      echo "No process is listening on port 8000"
+  fi
+
   nohup python3 main.py > ../logs/api_server.log 2>&1 &
   echo "FastAPI server restarted. Logs are in ./logs"
   echo ""
@@ -27,7 +36,7 @@ fi
 if [ "$restart_opensearch" = "1" ]; then
   echo "Restarting OpenSearch container..."
   cd ./opensearch
-  #docker-compose down
+  docker-compose down
   docker-compose up -d
   echo "OpenSearch container restarted."
   echo ""
@@ -37,6 +46,7 @@ fi
 if [ "$restart_jenkins" = "1" ]; then
   echo "Restarting Jenkins container..."
   cd ./daily_crawl
+  docker-compose down
   docker-compose up -d
   echo "Jenkins container restarted."
   echo ""
