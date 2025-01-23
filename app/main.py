@@ -11,9 +11,9 @@ def read_root():
     return {"message": "FastAPI"}
 
 
-@app.get("/api/accident/{date}")
-def read_accident(date: str):
-    return api.read_accident(date)
+@app.get("/api/accident")
+def read_recent_accident():
+    return api.read_recent_accident()
 
 
 @app.get("/api/accidents")

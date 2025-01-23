@@ -1,7 +1,6 @@
 from opensearchpy import OpenSearch, RequestsHttpConnection, TransportError, RequestError, ConnectionError
 from config import OPENSEARCH_HOST, INDEX_NAME
 from collections import OrderedDict
-from datetime import datetime
 from fastapi import HTTPException
 
 client = OpenSearch(
@@ -31,7 +30,7 @@ def fetch_data_from_opensearch(index: str, query: dict, hits1: str, hits2: str) 
         return []
 
 
-def read_accident(date: str) -> dict:
+def read_recent_accident() -> dict:
     try: 
         request_body = {
             "size": 1,
