@@ -1,9 +1,11 @@
-name: Run Pytest
+name: Run Pytest, Trigger on Modify App
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "app/**"
 
 jobs:
   test:
