@@ -157,7 +157,7 @@ async def read_airline_ko_description(doc_id: str):
 
 async def check_ko_description(doc_id: str) -> bool:
     try:
-        response = await client.get(index=INDEX_NAME, id=doc_id)
+        response = client.get(index=INDEX_NAME, id=doc_id)
         ko_description = response["_source"].get("ko_description", "")
         return ko_description == ""
     except Exception as e:
@@ -172,7 +172,7 @@ async def update_ko_description(doc_id: str, description: str) -> dict:
             "doc_as_upsert": True 
         }
 
-        response = await client.update(index=INDEX_NAME, id=doc_id, body=doc)
+        response = client.update(index=INDEX_NAME, id=doc_id, body=doc)
 
         if response['result'] in ['updated', 'created']:
             return {"message": "Description updated successfully.", "status": "success"}
