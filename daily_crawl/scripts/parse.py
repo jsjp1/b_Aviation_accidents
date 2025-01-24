@@ -69,6 +69,10 @@ except FileNotFoundError as e:
   print(e)
   exit(-1)
   
+if len(href_map) == 0:
+    print("Already exists in Opensearch")
+    exit(1)
+  
 docs = []
 for date in href_map:
   data_url = DB_ORIGIN_URL + href_map[date]
