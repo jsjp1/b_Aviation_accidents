@@ -2,6 +2,8 @@ import os
 import json
 from dotenv import load_dotenv
 from datetime import datetime
+
+from httpx import RequestError, TransportError
 from opensearchpy import OpenSearch, RequestsHttpConnection
 
 
@@ -56,6 +58,7 @@ date_lst = []
 try: 
     request_body = {
       "_source": ["date"],
+      "size": 1000,
       "query": {
         "range": {
           "date": {
@@ -71,10 +74,13 @@ try:
 except Exception as e:
     print(f"Error fetching accident: {e}")
     exit(-1)
-  
+    
+
 for date in date_lst:
   if date in date_href_map:
     del date_href_map[date]
+    
+print("Need to Update data: ", date_href_map.keys())
     
 try: 
   with open("/var/jenkins_scripts/href_map.json", 'w') as f:
