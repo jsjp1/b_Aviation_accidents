@@ -21,6 +21,11 @@ async def read_accidents(start: int, size: int):
     return await api.read_accidents(start, size)
 
 
+@app.get("/api/accidents/reverse")
+async def read_accidents_reverse(start: int, size: int):
+    return await api.read_accidents_reverse(start, size)
+
+
 @app.get("/api/suggestions/{airline}")
 async def read_airline_suggestions(airline: str):
     return await api.read_airline_suggestions(airline)

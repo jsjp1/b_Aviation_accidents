@@ -61,6 +61,21 @@ async def read_accidents(start: int, size: int) -> list:
     except Exception as e:
         print(f"Error fetching accidents: {e}")
         return []
+    
+
+async def read_accidents_reverse(start: int, size: int) -> list:
+    try:
+        request_body = {
+            "from": start,
+            "size": size,
+            "sort": [{"date": {"order": "asc"}}],
+            "_source": ["date", "time", "airline", "fatalities", "occupants", "location", "aircraft_status"],
+        }
+        response = await fetch_data_from_opensearch(INDEX_NAME, request_body, "hits", "hits")
+        return [{"_id": x["_id"], **x["_source"]} for x in response]
+    except Exception as e:
+        print(f"Error fetching accidents: {e}")
+        return []
 
 
 async def read_airline_suggestions(airline: str) -> list:
