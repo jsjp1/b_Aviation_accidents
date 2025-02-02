@@ -77,7 +77,7 @@ def test_read_airline_info_no_exist():
         
 
 def test_read_airline_description_exist():
-    _id = "7eYWjpQBsnp6W0Xd8Zpo"
+    _id = "Cn-QwZQBZYMe0_8tPeyo"
     response = client.get(f"/api/description/{_id}")
     res_dict = response.json()
     
